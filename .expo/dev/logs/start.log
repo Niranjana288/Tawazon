@@ -3,5 +3,3 @@
 {"_e":"env:load","_t":1782416682516,"mode":"development","files":["../../../.env"],"env":{"EXPO_PUBLIC_OPENAI_API_KEY":"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"}}
 {"_e":"devserver:start","_t":1782416682971,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../../../app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
 {"_e":"metro:config","_t":1782416683477,"serverRoot":"../../..","projectRoot":"../../..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
-{"_e":"metro:bundling:started","_t":1782416758534,"id":"3","platform":"web","environment":null,"entry":"index.ts"}
-{"_e":"metro:bundling:done","_t":1782416759647,"id":"3","total":1,"ms":1112.675}
