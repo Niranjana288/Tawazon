@@ -20,6 +20,9 @@ import LinkParentScreen from '../screens/LinkParentScreen'
 import BalanceBoostersScreen from '../screens/BalanceBoostersScreen'
 import MoodTriggerScreen from '../screens/MoodTriggerScreen'
 import TawazonGuideScreen from '../screens/TawazongGuideScreen'
+import SelfWorthHubScreen from '../screens/SelfWorthHubScreen'
+import TriggerAwarenessScreen from '../screens/TriggerAwarenessScreen'
+import SupportCenterScreen from '../screens/SupportCenterScreen'
 
 const Stack = createStackNavigator()
 
@@ -47,6 +50,9 @@ export default function AppNavigator() {
         <Stack.Screen name="LinkParent" component={LinkParentScreen} />
         <Stack.Screen name="BalanceBoosters" component={BalanceBoostersScreen} />
         <Stack.Screen name="TawazonGuide" component={TawazonGuideScreen} />
+        <Stack.Screen name="SelfWorthHub" component={SelfWorthHubScreen} />
+        <Stack.Screen name="TriggerAwareness" component={TriggerAwarenessScreen} />
+        <Stack.Screen name="SupportCenter" component={SupportCenterScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )

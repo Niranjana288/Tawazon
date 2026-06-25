@@ -362,6 +362,15 @@ if (data?.boosters_setup_done) {
               <Text style={styles.actionTitle}>Coping Toolkit</Text>
               <Text style={styles.actionSubtitle}>Feel better now</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+             style={[styles.actionCard, { backgroundColor: '#EDE9FF' }]}
+             onPress={() => navigation.navigate('SelfWorthHub')}
+             activeOpacity={0.85}
+            >
+              <Text style={styles.actionIcon}>🪞</Text>
+              <Text style={styles.actionTitle}>A Space for You</Text>
+              <Text style={styles.actionSubtitle}>Self-worth reflections</Text>
+             </TouchableOpacity>
           </View>
           {/* Balance Boosters banner — shown if not set up */}
           {!boostersSetupDone && (
@@ -394,28 +403,69 @@ if (data?.boosters_setup_done) {
             </TouchableOpacity>
           )}
            {/* Reality Check card — shown if social media or body image selected */}
-          {(moodTriggers.includes('social_media') || moodTriggers.includes('body_image')) && (
-            <View style={styles.realityCard}>
-              <Text style={styles.realityCardLabel}>Reality Check</Text>
-              <Text style={styles.realityCardText}>
-                {[
-                  "People often share their best moments online — not their everyday struggles.",
-                  "Your progress doesn't need to look like someone else's.",
-                  "A person's worth cannot be measured by appearance, followers, or achievements.",
-                  "What you see online is a highlight reel, not the full story.",
-                  "You are allowed to grow at your own pace.",
-                  "Comparison is the thief of joy. Your journey is uniquely yours.",
-                  "Social media shows moments, not reality. You are enough as you are.",
-                ][realityCardIndex % 7]}
-              </Text>
-              <TouchableOpacity
-                onPress={() => setRealityCardIndex(realityCardIndex + 1)}
-                style={styles.realityCardNext}
-              >
-                <Text style={styles.realityCardNextText}>Next reminder →</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+           {moodTriggers.length > 0 && (
+  <View style={styles.realityCard}>
+    <Text style={styles.realityCardLabel}>
+      {moodTriggers.includes('social_media') ? 'Reality Check' :
+       moodTriggers.includes('school') ? 'School Pressure' :
+       moodTriggers.includes('friendships') ? 'Friendships' :
+       moodTriggers.includes('family') ? 'Family' :
+       moodTriggers.includes('body_image') ? 'Self Worth' :
+       moodTriggers.includes('future') ? 'Future Worries' :
+       'Mood Check'}
+    </Text>
+    <Text style={styles.realityCardText}>
+      {moodTriggers.includes('social_media') ? [
+        "People often share their best moments online — not their everyday struggles.",
+        "Your progress doesn't need to look like someone else's.",
+        "What you see online is a highlight reel, not the full story.",
+      ][realityCardIndex % 3] :
+      moodTriggers.includes('school') ? [
+        "Academic pressure is real. You are doing your best.",
+        "Difficult periods at school are temporary. They do not define you.",
+        "It is okay to take things one step at a time.",
+      ][realityCardIndex % 3] :
+      moodTriggers.includes('friendships') ? [
+        "It is okay if relationships feel complicated right now.",
+        "You deserve friendships that feel safe and genuine.",
+        "Connections change and grow over time. That is normal.",
+      ][realityCardIndex % 3] :
+      moodTriggers.includes('family') ? [
+        "Family dynamics can affect us in deep ways. What you feel is valid.",
+        "It is okay to find family situations complicated.",
+        "You do not have to have it all figured out.",
+      ][realityCardIndex % 3] :
+      moodTriggers.includes('body_image') ? [
+        "Your worth is not defined by how you look.",
+        "How we see ourselves is often shaped by comparison and stress — not reality.",
+        "You deserve kindness — especially from yourself.",
+      ][realityCardIndex % 3] :
+      moodTriggers.includes('future') ? [
+        "You do not have to have everything figured out right now.",
+        "Taking things one day at a time is always enough.",
+        "Worry about the future is something almost everyone feels.",
+      ][realityCardIndex % 3] : [
+        "It makes sense that things feel heavy when so much is happening at once.",
+        "You do not have to address everything at the same time.",
+        "Small steps forward still count.",
+      ][realityCardIndex % 3]}
+    </Text>
+    <View style={styles.realityCardActions}>
+      <TouchableOpacity
+        onPress={() => setRealityCardIndex(realityCardIndex + 1)}
+        style={styles.realityCardNext}
+      >
+        <Text style={styles.realityCardNextText}>Next →</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('TriggerAwareness')}
+        style={styles.realityCardExplore}
+      >
+        <Text style={styles.realityCardExploreText}>Explore →</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+)}
 
           {/* Emotional continuity */}
           <View style={styles.continuityCard}>
@@ -852,4 +902,17 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   floatingGuideEmoji: { fontSize: 24 },
+  realityCardActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  realityCardExplore: {
+    alignSelf: 'flex-end',
+  },
+  realityCardExploreText: {
+    fontSize: 12,
+    color: '#4DB6AC',
+    fontWeight: '600',
+  },
 })

@@ -13,62 +13,62 @@ import { supabase } from '../api/supabase'
 const QUESTIONS = [
   {
     id: 1,
-    question: 'How have you been feeling recently?',
+    question: 'How have you been feeling about yourself lately?',
     options: [
-      { text: 'Mostly okay', emoji: '🌿', score: 0 },
-      { text: 'Ups and downs', emoji: '🙂', score: 1 },
-      { text: 'Often overwhelmed', emoji: '🌧️', score: 2 },
-      { text: 'I find it hard to explain', emoji: '💭', score: 1 },
+      { text: 'Mostly okay with who I am', emoji: '🌿', score: 0 },
+      { text: 'Some moments of self-doubt', emoji: '🙂', score: 1 },
+      { text: 'Often critical of myself', emoji: '🌧️', score: 2 },
+      { text: 'I find it hard to feel good about myself', emoji: '💭', score: 3 },
     ],
-    response: "Thank you for sharing that 🌱 Let's understand you a little better.",
+    response: "Thank you for sharing that. You're not alone in this.",
     skippable: false,
   },
   {
     id: 2,
-    question: 'How often do you feel stressed during your day?',
+    question: 'When things feel overwhelming, what tends to happen?',
     options: [
-      { text: 'Rarely', emoji: '🌿', score: 0 },
-      { text: 'Sometimes', emoji: '🙂', score: 1 },
-      { text: 'Often', emoji: '🌧️', score: 2 },
-      { text: 'Almost constantly', emoji: '⛈️', score: 3 },
+      { text: 'I find ways to cope and move on', emoji: '🌿', score: 0 },
+      { text: 'I try to control small things to feel better', emoji: '🙂', score: 1 },
+      { text: 'I withdraw or avoid situations', emoji: '🌧️', score: 2 },
+      { text: "I'm not sure how I respond", emoji: '💭', score: 1 },
     ],
-    response: 'Got it. Stress can show up in different ways — thank you for being honest.',
+    response: "That's really honest. Our responses to overwhelm tell us a lot.",
     skippable: false,
   },
   {
     id: 3,
-    question: 'How is your energy most days?',
+    question: 'How has your energy and motivation been lately?',
     options: [
-      { text: 'Stable', emoji: '🌿', score: 0 },
-      { text: 'A bit low sometimes', emoji: '🙂', score: 1 },
-      { text: 'Often tired', emoji: '🌧️', score: 2 },
-      { text: 'Exhausted most of the time', emoji: '⛈️', score: 3 },
+      { text: 'Fairly consistent', emoji: '🌿', score: 0 },
+      { text: 'Up and down depending on the day', emoji: '🙂', score: 1 },
+      { text: 'Often low or hard to find', emoji: '🌧️', score: 2 },
+      { text: 'I struggle to enjoy things I used to love', emoji: '⛈️', score: 3 },
     ],
-    response: 'Your energy patterns help us understand your balance 🌱',
+    response: 'Thank you for sharing. Energy and motivation are deeply connected to how we feel.',
     skippable: false,
   },
   {
     id: 4,
-    question: 'How comfortable do you feel around food and eating routines?',
+    question: 'How do you feel about yourself compared to others?',
     options: [
-      { text: 'Comfortable and relaxed', emoji: '🌿', score: 0 },
-      { text: 'Sometimes overthink it', emoji: '🙂', score: 1 },
-      { text: 'Often feel stressed or guilty', emoji: '🌧️', score: 2 },
+      { text: 'I mostly feel okay about who I am', emoji: '🌿', score: 0 },
+      { text: 'I sometimes compare and feel less confident', emoji: '🙂', score: 1 },
+      { text: "I often feel like I don't measure up", emoji: '🌧️', score: 2 },
       { text: 'I prefer not to say', emoji: '💭', score: 1 },
     ],
-    response: "Thank you for trusting us with that. We'll take this step by step 🌿",
+    response: 'Comparison affects so many of us. Thank you for trusting us with that.',
     skippable: false,
   },
   {
     id: 5,
-    question: 'How do you generally feel about your body?',
+    question: 'How do you generally feel about your sense of self and appearance?',
     options: [
-      { text: 'Mostly neutral or positive', emoji: '🌿', score: 0 },
-      { text: 'Some insecurities', emoji: '🙂', score: 1 },
-      { text: 'Often critical thoughts', emoji: '🌧️', score: 2 },
-      { text: "I'd rather skip", emoji: '💭', score: 0 },
+      { text: 'Mostly at peace with myself', emoji: '🌿', score: 0 },
+      { text: 'Some days are harder than others', emoji: '🙂', score: 1 },
+      { text: 'I often feel critical or uncomfortable', emoji: '🌧️', score: 2 },
+      { text: "I'd rather skip this one", emoji: '💭', score: 0 },
     ],
-    response: "That's okay. You can always skip questions you're not ready for.",
+    response: "That's okay. No pressure here at all.",
     skippable: true,
   },
   {
@@ -80,19 +80,43 @@ const QUESTIONS = [
       { text: 'Not really', emoji: '🌧️', score: 2 },
       { text: 'I feel alone sometimes', emoji: '⛈️', score: 3 },
     ],
-    response: 'Support systems matter. Thank you for sharing 🌱',
+    response: 'Support systems matter more than we often realise. Thank you.',
     skippable: false,
   },
   {
     id: 7,
-    question: 'How has your sleep been lately?',
+    question: 'How does how you feel emotionally affect your rest and sleep?',
     options: [
-      { text: 'Good and consistent', emoji: '🌿', score: 0 },
-      { text: 'Slightly irregular', emoji: '🙂', score: 1 },
-      { text: 'Poor sleep most nights', emoji: '🌧️', score: 2 },
-      { text: 'Very disrupted', emoji: '⛈️', score: 3 },
+      { text: 'My sleep is generally okay', emoji: '🌿', score: 0 },
+      { text: 'My feelings sometimes affect my sleep', emoji: '🙂', score: 1 },
+      { text: 'Difficult emotions often disrupt my rest', emoji: '🌧️', score: 2 },
+      { text: 'I rarely feel truly rested', emoji: '⛈️', score: 3 },
     ],
-    response: 'Sleep patterns help us understand recovery balance 🌙',
+    response: 'Emotions and rest are deeply connected. Thank you for sharing.',
+    skippable: false,
+  },
+  {
+    id: 8,
+    question: 'Do you ever hold back from situations because of how you feel about yourself?',
+    options: [
+      { text: 'Rarely or never', emoji: '🌿', score: 0 },
+      { text: 'Sometimes I hold back', emoji: '🙂', score: 1 },
+      { text: 'Often — it affects my daily life', emoji: '🌧️', score: 2 },
+      { text: "I'm not sure", emoji: '💭', score: 1 },
+    ],
+    response: 'Noticing this is an important first step. Thank you.',
+    skippable: false,
+  },
+  {
+    id: 9,
+    question: 'How stable does your sense of self-worth feel from day to day?',
+    options: [
+      { text: 'Generally steady', emoji: '🌿', score: 0 },
+      { text: 'It shifts with how things go', emoji: '🙂', score: 1 },
+      { text: 'It feels quite fragile', emoji: '🌧️', score: 2 },
+      { text: "I haven't really thought about this", emoji: '💭', score: 1 },
+    ],
+    response: "Self-worth can feel like a wave sometimes. You're not alone.",
     skippable: false,
   },
 ]
@@ -167,6 +191,13 @@ export default function RiskAssessmentScreen({ navigation }: any) {
     const score = QUESTIONS[currentQ].options[selectedOption].score
     const newScores = [...scores, score]
     setScores(newScores)
+    // Special response for Q5 based on selection
+    if (currentQ === 4) {
+    const isSkip = QUESTIONS[currentQ].options[selectedOption].text === "I'd rather skip this one"
+    QUESTIONS[currentQ].response = isSkip
+      ? "That's okay. No pressure here at all."
+      : "Thank you for sharing. You're not alone in those feelings."
+    }
     setShowResponse(true)
     responseAnim.setValue(0)
     Animated.timing(responseAnim, {
@@ -243,7 +274,7 @@ export default function RiskAssessmentScreen({ navigation }: any) {
           <Text style={styles.finalEmoji}>🌿</Text>
           <Text style={styles.finalTitle}>Thank you for sharing with us</Text>
           <Text style={styles.finalSubtitle}>
-            This helps Tawazon understand your current balance and support your journey
+            This helps Tawazon understand you better and walk alongside you gently.
           </Text>
           <View style={styles.classificationCard}>
             <Text style={styles.classificationText}>
@@ -251,7 +282,7 @@ export default function RiskAssessmentScreen({ navigation }: any) {
             </Text>
           </View>
           <Text style={styles.finalNote}>
-            This is not a diagnosis. Tawazon is here to support you, not label you.
+            This is not a diagnosis or assessment. Tawazon is here to support you, not label you.{'\n\n'}If you ever feel you need more support, speaking to a school counselor or trusted adult is always a brave and positive step. You don't have to figure everything out alone.
           </Text>
           <TouchableOpacity
             style={styles.button}

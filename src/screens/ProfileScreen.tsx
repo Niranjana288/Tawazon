@@ -283,6 +283,13 @@ export default function ProfileScreen({ navigation }: any) {
           </TouchableOpacity>
           )}
           <TouchableOpacity
+            style={styles.supportButton}
+            onPress={() => navigation.navigate('SupportCenter')}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.supportButtonText}>🌿 Support Center</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={styles.signOutButton}
             onPress={handleSignOut}
             activeOpacity={0.85}
@@ -553,6 +560,20 @@ const styles = StyleSheet.create({
     borderColor: '#4DB6AC',
   },
   linkParentText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#4DB6AC',
+  },
+  supportButton: {
+    backgroundColor: '#F0FAFA',
+    borderRadius: 30,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginBottom: 12,
+    borderWidth: 1.5,
+    borderColor: '#4DB6AC',
+  },
+  supportButtonText: {
     fontSize: 15,
     fontWeight: '600',
     color: '#4DB6AC',
