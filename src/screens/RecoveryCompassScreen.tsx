@@ -399,7 +399,7 @@ export default function RecoveryCompassScreen({ navigation }: any) {
           <Animated.View
             style={[
               styles.focusPanel,
-              { borderColor: selectedArc.color },
+              { borderColor: selectedArc.color + '88', shadowColor: selectedArc.color },
               {
                 opacity: panelAnim,
                 transform: [{
@@ -434,7 +434,7 @@ export default function RecoveryCompassScreen({ navigation }: any) {
 
             {/* Action button */}
             <TouchableOpacity
-              style={[styles.focusAction, { backgroundColor: selectedArc.color }]}
+              style={[styles.focusAction, { backgroundColor: selectedArc.color, shadowColor: selectedArc.color }]}
               onPress={() => navigation.navigate(selectedArc.actionScreen)}
               activeOpacity={0.85}
             >
@@ -445,10 +445,12 @@ export default function RecoveryCompassScreen({ navigation }: any) {
 
         {/* Status card — only when nothing selected */}
         {!selectedId && (
-          <View style={[styles.statusCard, { borderColor: status.color }]}>
-            <View style={[styles.statusDot, { backgroundColor: status.color }]} />
-            <View style={styles.statusInfo}>
+          <View style={[styles.statusCard, { borderColor: status.color + '55' }]}>
+            <View style={styles.statusTop}>
+              <View style={[styles.statusDot, { backgroundColor: status.color }]} />
               <Text style={[styles.statusLabel, { color: status.color }]}>{status.label}</Text>
+            </View>
+            <View style={styles.statusInfo}>
               <Text style={styles.statusDesc}>{status.desc}</Text>
             </View>
           </View>
@@ -457,6 +459,7 @@ export default function RecoveryCompassScreen({ navigation }: any) {
         {/* No data */}
         {!hasData && (
           <View style={styles.noDataCard}>
+            <Text style={styles.noDataEmoji}>🧭</Text>
             <Text style={styles.noDataText}>
               Complete your first check-in to bring your compass to life.
             </Text>
@@ -487,24 +490,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
     paddingTop: 56,
-    paddingBottom: 12,
+    paddingBottom: 14,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#F0F0F0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
   backButton: { width: 40 },
-  backText: { fontSize: 14, color: '#4DB6AC', fontWeight: '500' },
+  backText: { fontSize: 14, color: '#4DB6AC', fontWeight: '600' },
   headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle: { fontSize: 16, fontWeight: '700', color: '#2E3A59' },
-  headerSubtitle: { fontSize: 11, color: '#9BA3B0', marginTop: 3 },
+  headerTitle: { fontSize: 17, fontWeight: '700', color: '#2E3A59', letterSpacing: -0.2 },
+  headerSubtitle: { fontSize: 11, color: '#9BA3B0', marginTop: 3, letterSpacing: 0.2 },
   scrollContent: {
-    paddingBottom: 40,
+    paddingBottom: 48,
     alignItems: 'center',
-    paddingTop: 16,
+    paddingTop: 24,
   },
   compassWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: 8,
   },
   compassInner: {
     width: SIZE,
@@ -513,8 +522,8 @@ const styles = StyleSheet.create({
   },
   arcLabel: {
     position: 'absolute',
-    width: 44,
-    height: 44,
+    width: 52,
+    height: 52,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -522,12 +531,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  arcEmoji: { fontSize: 14 },
+  arcEmoji: { fontSize: 16 },
   arcLabelText: {
     fontSize: 8,
-    fontWeight: '600',
-    marginTop: 1,
+    fontWeight: '700',
+    marginTop: 2,
     textAlign: 'center',
+    letterSpacing: 0.3,
   },
   centerNode: {
     position: 'absolute',
@@ -541,18 +551,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 6,
     lineHeight: 14,
+    letterSpacing: 0.2,
   },
   focusPanel: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: 24,
+    padding: 22,
     marginHorizontal: 24,
     borderWidth: 1.5,
-    shadowColor: '#B39DDB',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 5,
     width: SCREEN_WIDTH - 48,
     marginBottom: 16,
   },
@@ -560,60 +571,68 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: 14,
   },
   focusTopLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
   },
-  focusEmoji: { fontSize: 22 },
-  focusLabel: { fontSize: 17, fontWeight: '700' },
+  focusEmoji: { fontSize: 24 },
+  focusLabel: { fontSize: 18, fontWeight: '700', letterSpacing: -0.2 },
   focusInsight: {
     fontSize: 14,
-    color: '#2E3A59',
-    lineHeight: 22,
+    color: '#4B5563',
+    lineHeight: 23,
     marginBottom: 14,
   },
   focusQuestionCard: {
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
-    padding: 12,
-    marginBottom: 14,
+    padding: 14,
+    marginBottom: 16,
     backgroundColor: '#FAFAFA',
   },
   focusQuestion: {
     fontSize: 13,
     color: '#6B7280',
     fontStyle: 'italic',
-    lineHeight: 20,
+    lineHeight: 21,
   },
   focusAction: {
-    paddingVertical: 13,
+    paddingVertical: 14,
     borderRadius: 30,
     alignItems: 'center',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 4,
   },
   focusActionText: {
     color: '#ffffff',
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
   statusCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 20,
+    padding: 18,
     marginHorizontal: 24,
     borderWidth: 1.5,
     width: SCREEN_WIDTH - 48,
     marginBottom: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 1,
-    gap: 12,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 2,
+  },
+  statusTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
   },
   statusDot: {
     width: 10,
@@ -622,34 +641,43 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   statusInfo: { flex: 1 },
-  statusLabel: { fontSize: 15, fontWeight: '700', marginBottom: 4 },
-  statusDesc: { fontSize: 13, color: '#9BA3B0', lineHeight: 20 },
+  statusLabel: { fontSize: 16, fontWeight: '700', letterSpacing: -0.2 },
+  statusDesc: { fontSize: 13, color: '#9BA3B0', lineHeight: 21 },
   noDataCard: {
     backgroundColor: '#F0FAFA',
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: 20,
+    padding: 24,
     marginHorizontal: 24,
     alignItems: 'center',
     width: SCREEN_WIDTH - 48,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#C8EFEC',
   },
+  noDataEmoji: { fontSize: 36, marginBottom: 12 },
   noDataText: {
     fontSize: 14,
     color: '#9BA3B0',
     textAlign: 'center',
     lineHeight: 22,
-    marginBottom: 16,
+    marginBottom: 18,
   },
   noDataButton: {
     backgroundColor: '#4DB6AC',
-    paddingVertical: 12,
-    paddingHorizontal: 28,
+    paddingVertical: 13,
+    paddingHorizontal: 32,
     borderRadius: 30,
+    shadowColor: '#4DB6AC',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 4,
   },
   noDataButtonText: {
     color: '#ffffff',
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
   privacyNote: {
     fontSize: 11,

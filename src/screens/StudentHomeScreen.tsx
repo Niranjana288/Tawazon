@@ -9,8 +9,12 @@ import {
   TouchableOpacity,
   StatusBar,
   ScrollView,
+  Dimensions,
 } from 'react-native'
+import Svg, { Circle, Path, Defs, LinearGradient, Stop, G, Ellipse } from 'react-native-svg'
 import { supabase } from '../api/supabase'
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
 const REFLECTION_PROMPTS = [
     "What made today a little easier?",
@@ -46,11 +50,133 @@ const REFLECTION_PROMPTS = [
   ]
 
 const getBalanceOrganism = (score: number) => {
-  if (score <= 20) return { emoji: '🌰', state: 'Seed', message: 'Your journey is just beginning' }
-  if (score <= 40) return { emoji: '🌱', state: 'Sprout', message: "You're starting to grow" }
-  if (score <= 60) return { emoji: '🌿', state: 'Growing', message: 'Your balance is developing' }
-  if (score <= 80) return { emoji: '🌳', state: 'Blooming', message: "You're becoming more stable" }
-  return { emoji: '🌲', state: 'Thriving', message: "You're in a great place" }
+  if (score <= 20) return { stage: 'seed', state: 'Seed', message: 'Your journey is just beginning' }
+  if (score <= 40) return { stage: 'sprout', state: 'Sprout', message: "You're starting to grow" }
+  if (score <= 60) return { stage: 'growing', state: 'Growing', message: 'Your balance is developing' }
+  if (score <= 80) return { stage: 'blooming', state: 'Blooming', message: "You're becoming more stable" }
+  return { stage: 'thriving', state: 'Thriving', message: "You're in a great place" }
+}
+
+// SVG plant component with 5 growth stages
+const PlantSVG = ({ stage, pulseAnim }: { stage: string; pulseAnim: Animated.Value }) => {
+  const colors = {
+    seed: { trunk: '#8B6A4F', leaf: '#A5D6A7', soil: '#C8A882' },
+    sprout: { trunk: '#6D9B3A', leaf: '#81C784', soil: '#A5C878' },
+    growing: { trunk: '#4CAF50', leaf: '#66BB6A', soil: '#8BC34A' },
+    blooming: { trunk: '#43A047', leaf: '#4DB6AC', soil: '#80CBC4' },
+    thriving: { trunk: '#388E3C', leaf: '#4DB6AC', soil: '#80CBC4' },
+  }
+  const c = colors[stage as keyof typeof colors] || colors.growing
+
+  if (stage === 'seed') {
+    return (
+      <Svg width={72} height={72} viewBox="0 0 72 72">
+        <Defs>
+          <LinearGradient id="soilGrad" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0%" stopColor={c.soil} />
+            <Stop offset="100%" stopColor="#A0784A" />
+          </LinearGradient>
+        </Defs>
+        <Ellipse cx={36} cy={54} rx={22} ry={8} fill="url(#soilGrad)" />
+        <Ellipse cx={36} cy={42} rx={12} ry={11} fill={c.trunk} />
+        <Ellipse cx={36} cy={40} rx={9} ry={8} fill={c.leaf} opacity={0.85} />
+      </Svg>
+    )
+  }
+
+  if (stage === 'sprout') {
+    return (
+      <Svg width={72} height={72} viewBox="0 0 72 72">
+        <Defs>
+          <LinearGradient id="leafGrad" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0%" stopColor={c.leaf} />
+            <Stop offset="100%" stopColor="#A5D6A7" />
+          </LinearGradient>
+        </Defs>
+        <Ellipse cx={36} cy={58} rx={20} ry={7} fill={c.soil} opacity={0.6} />
+        <Path d="M36 52 L36 30" stroke={c.trunk} strokeWidth={3} strokeLinecap="round" />
+        <Ellipse cx={28} cy={34} rx={9} ry={7} fill="url(#leafGrad)" transform="rotate(-25 28 34)" />
+        <Ellipse cx={44} cy={34} rx={9} ry={7} fill="url(#leafGrad)" transform="rotate(25 44 34)" />
+      </Svg>
+    )
+  }
+
+  if (stage === 'growing') {
+    return (
+      <Svg width={72} height={72} viewBox="0 0 72 72">
+        <Defs>
+          <LinearGradient id="lGrad" x1="0" y1="0" x2="1" y2="1">
+            <Stop offset="0%" stopColor="#81C784" />
+            <Stop offset="100%" stopColor={c.leaf} />
+          </LinearGradient>
+        </Defs>
+        <Ellipse cx={36} cy={61} rx={20} ry={6} fill={c.soil} opacity={0.5} />
+        <Path d="M36 58 L36 28" stroke={c.trunk} strokeWidth={3.5} strokeLinecap="round" />
+        <Path d="M36 44 Q26 36 20 30" stroke={c.trunk} strokeWidth={2.5} strokeLinecap="round" fill="none" />
+        <Path d="M36 44 Q46 36 52 30" stroke={c.trunk} strokeWidth={2.5} strokeLinecap="round" fill="none" />
+        <Ellipse cx={18} cy={27} rx={11} ry={8} fill="url(#lGrad)" transform="rotate(-20 18 27)" />
+        <Ellipse cx={54} cy={27} rx={11} ry={8} fill="url(#lGrad)" transform="rotate(20 54 27)" />
+        <Ellipse cx={36} cy={22} rx={10} ry={8} fill="url(#lGrad)" />
+      </Svg>
+    )
+  }
+
+  if (stage === 'blooming') {
+    return (
+      <Svg width={72} height={72} viewBox="0 0 72 72">
+        <Defs>
+          <LinearGradient id="bGrad" x1="0" y1="0" x2="1" y2="1">
+            <Stop offset="0%" stopColor="#80CBC4" />
+            <Stop offset="100%" stopColor="#4DB6AC" />
+          </LinearGradient>
+          <LinearGradient id="flGrad" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0%" stopColor="#F8BBD0" />
+            <Stop offset="100%" stopColor="#F48FB1" stopOpacity="0.6" />
+          </LinearGradient>
+        </Defs>
+        <Ellipse cx={36} cy={62} rx={20} ry={5} fill={c.soil} opacity={0.45} />
+        <Path d="M36 60 L36 26" stroke={c.trunk} strokeWidth={4} strokeLinecap="round" />
+        <Path d="M36 42 Q22 32 14 24" stroke={c.trunk} strokeWidth={2.5} fill="none" strokeLinecap="round" />
+        <Path d="M36 42 Q50 32 58 24" stroke={c.trunk} strokeWidth={2.5} fill="none" strokeLinecap="round" />
+        <Ellipse cx={12} cy={20} rx={12} ry={9} fill="url(#bGrad)" transform="rotate(-20 12 20)" />
+        <Ellipse cx={60} cy={20} rx={12} ry={9} fill="url(#bGrad)" transform="rotate(20 60 20)" />
+        <Ellipse cx={36} cy={18} rx={12} ry={9} fill="url(#bGrad)" />
+        <Circle cx={36} cy={14} r={5} fill="url(#flGrad)" opacity={0.9} />
+        <Circle cx={28} cy={16} r={3.5} fill="url(#flGrad)" opacity={0.8} />
+        <Circle cx={44} cy={16} r={3.5} fill="url(#flGrad)" opacity={0.8} />
+      </Svg>
+    )
+  }
+
+  // thriving
+  return (
+    <Svg width={72} height={72} viewBox="0 0 72 72">
+      <Defs>
+        <LinearGradient id="tGrad" x1="0" y1="0" x2="1" y2="1">
+          <Stop offset="0%" stopColor="#80CBC4" />
+          <Stop offset="100%" stopColor="#26A69A" />
+        </LinearGradient>
+        <LinearGradient id="flGrad2" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0%" stopColor="#F8BBD0" />
+          <Stop offset="100%" stopColor="#F48FB1" stopOpacity="0.7" />
+        </LinearGradient>
+      </Defs>
+      <Ellipse cx={36} cy={64} rx={20} ry={5} fill={c.soil} opacity={0.4} />
+      <Path d="M36 62 L36 22" stroke={c.trunk} strokeWidth={5} strokeLinecap="round" />
+      <Path d="M36 48 Q18 36 8 22" stroke={c.trunk} strokeWidth={3} fill="none" strokeLinecap="round" />
+      <Path d="M36 48 Q54 36 64 22" stroke={c.trunk} strokeWidth={3} fill="none" strokeLinecap="round" />
+      <Path d="M36 34 Q24 26 18 16" stroke={c.trunk} strokeWidth={2} fill="none" strokeLinecap="round" />
+      <Path d="M36 34 Q48 26 54 16" stroke={c.trunk} strokeWidth={2} fill="none" strokeLinecap="round" />
+      <Ellipse cx={6} cy={18} rx={12} ry={9} fill="url(#tGrad)" transform="rotate(-25 6 18)" />
+      <Ellipse cx={66} cy={18} rx={12} ry={9} fill="url(#tGrad)" transform="rotate(25 66 18)" />
+      <Ellipse cx={16} cy={11} rx={10} ry={7} fill="url(#tGrad)" transform="rotate(-15 16 11)" />
+      <Ellipse cx={56} cy={11} rx={10} ry={7} fill="url(#tGrad)" transform="rotate(15 56 11)" />
+      <Ellipse cx={36} cy={16} rx={12} ry={9} fill="url(#tGrad)" />
+      <Circle cx={36} cy={10} r={5} fill="url(#flGrad2)" />
+      <Circle cx={27} cy={13} r={3.5} fill="url(#flGrad2)" opacity={0.85} />
+      <Circle cx={45} cy={13} r={3.5} fill="url(#flGrad2)" opacity={0.85} />
+    </Svg>
+  )
 }
 
 export default function StudentHomeScreen({ navigation, route }: any) {
@@ -204,6 +330,14 @@ if (data?.boosters_setup_done) {
     return '#F48FB1'
   }
 
+  const QUICK_ACTIONS = [
+    { bg: '#E8F8F6', icon: '📋', title: 'Daily Check-in', subtitle: 'Log how you feel', screen: 'CheckIn', onPress: () => { showWin('You checked in with yourself today'); navigation.navigate('CheckIn') } },
+    { bg: '#EDE9FF', icon: '🔒', title: 'Journal Vault', subtitle: 'Private to you', screen: 'Journal', onPress: () => navigation.navigate('Journal') },
+    { bg: '#FFF3E8', icon: '🧠', title: 'CBT Tools', subtitle: 'Learn and grow', screen: 'CBT', onPress: () => navigation.navigate('CBT') },
+    { bg: '#F0F8FF', icon: '🌿', title: 'Coping Toolkit', subtitle: 'Feel better now', screen: 'Coping', onPress: () => navigation.navigate('Coping') },
+    { bg: '#EDE9FF', icon: '🪞', title: 'A Space for You', subtitle: 'Self-worth reflections', screen: 'SelfWorthHub', onPress: () => navigation.navigate('SelfWorthHub') },
+  ]
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FAFAFA" />
@@ -224,6 +358,7 @@ if (data?.boosters_setup_done) {
             },
           ]}
         >
+          <Text style={styles.microWinIcon}>✨</Text>
           <Text style={styles.microWinText}>{microWinMessage}</Text>
         </Animated.View>
       )}
@@ -259,14 +394,17 @@ if (data?.boosters_setup_done) {
 
           {/* Balance Organism Card */}
           <View style={styles.balanceCard}>
-            <View style={styles.balanceTop}>
+            <View style={styles.balanceCardInner}>
               <View style={styles.balanceTextSection}>
-                <Text style={styles.balanceLabel}>Balance Index</Text>
+                <Text style={styles.balanceLabel}>Balance Tree</Text>
                 <Text style={styles.balanceSubLabel}>{organism.message}</Text>
+                <View style={styles.stageChip}>
+                  <Text style={styles.stageChipText}>{organism.state}</Text>
+                </View>
               </View>
-              <Animated.Text
+              <Animated.View
                 style={[
-                  styles.plantEmoji,
+                  styles.plantContainer,
                   {
                     transform: [
                       { scale: plantScale },
@@ -275,11 +413,12 @@ if (data?.boosters_setup_done) {
                   },
                 ]}
               >
-                {organism.emoji}
-              </Animated.Text>
+                <PlantSVG stage={organism.stage} pulseAnim={plantPulse} />
+              </Animated.View>
             </View>
-            <View style={styles.balanceBar}>
-              <View
+
+            <View style={styles.balanceBarTrack}>
+              <Animated.View
                 style={[
                   styles.balanceFill,
                   {
@@ -289,18 +428,24 @@ if (data?.boosters_setup_done) {
                 ]}
               />
             </View>
-            <View style={styles.balanceBottom}>
-              <Text style={styles.balanceState}>{organism.state}</Text>
-              <Text style={[styles.balanceScore, { color: getBalanceColor() }]}>
-                {balanceIndex}/100
-              </Text>
+
+            <View style={styles.balanceFooter}>
+              <View style={styles.balanceScoreRow}>
+                <View style={[styles.balanceDot, { backgroundColor: getBalanceColor() }]} />
+                <Text style={[styles.balanceScore, { color: getBalanceColor() }]}>
+                  {balanceIndex} / 100
+                </Text>
+              </View>
+              <Text style={styles.balanceHint}>Grows with each check-in</Text>
             </View>
           </View>
 
           {/* Streak + Reflection row */}
           <View style={styles.rowCards}>
             <View style={styles.streakCard}>
-              <Text style={styles.streakEmoji}>🔥</Text>
+              <View style={styles.streakIconWrap}>
+                <Text style={styles.streakEmoji}>🔥</Text>
+              </View>
               <Text style={styles.streakCount}>{streak}</Text>
               <Text style={styles.streakLabel}>day streak</Text>
             </View>
@@ -312,7 +457,7 @@ if (data?.boosters_setup_done) {
                 onPress={() => navigation.navigate('Journal')}
                 style={styles.reflectionButton}
               >
-                <Text style={styles.reflectionButtonText}>Reflect</Text>
+                <Text style={styles.reflectionButtonText}>Reflect →</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -320,58 +465,20 @@ if (data?.boosters_setup_done) {
           {/* Quick actions */}
           <Text style={styles.sectionTitle}>Quick actions</Text>
           <View style={styles.actionsGrid}>
-            <TouchableOpacity
-              style={[styles.actionCard, { backgroundColor: '#E8F8F6' }]}
-              onPress={() => {
-                showWin('You checked in with yourself today')
-                navigation.navigate('CheckIn')
-              }}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.actionIcon}>📋</Text>
-              <Text style={styles.actionTitle}>Daily Check-in</Text>
-              <Text style={styles.actionSubtitle}>Log how you feel</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionCard, { backgroundColor: '#EDE9FF' }]}
-              onPress={() => navigation.navigate('Journal')}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.actionIcon}>🔒</Text>
-              <Text style={styles.actionTitle}>Journal Vault</Text>
-              <Text style={styles.actionSubtitle}>Private to you</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionCard, { backgroundColor: '#FFF3E8' }]}
-              onPress={() => navigation.navigate('CBT')}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.actionIcon}>🧠</Text>
-              <Text style={styles.actionTitle}>CBT Tools</Text>
-              <Text style={styles.actionSubtitle}>Learn and grow</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionCard, { backgroundColor: '#F0F8FF' }]}
-              onPress={() => navigation.navigate('Coping')}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.actionIcon}>🌿</Text>
-              <Text style={styles.actionTitle}>Coping Toolkit</Text>
-              <Text style={styles.actionSubtitle}>Feel better now</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-             style={[styles.actionCard, { backgroundColor: '#EDE9FF' }]}
-             onPress={() => navigation.navigate('SelfWorthHub')}
-             activeOpacity={0.85}
-            >
-              <Text style={styles.actionIcon}>🪞</Text>
-              <Text style={styles.actionTitle}>A Space for You</Text>
-              <Text style={styles.actionSubtitle}>Self-worth reflections</Text>
-             </TouchableOpacity>
+            {QUICK_ACTIONS.map((action, idx) => (
+              <TouchableOpacity
+                key={idx}
+                style={[styles.actionCard, { backgroundColor: action.bg }]}
+                onPress={action.onPress}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.actionIcon}>{action.icon}</Text>
+                <Text style={styles.actionTitle}>{action.title}</Text>
+                <Text style={styles.actionSubtitle}>{action.subtitle}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
+
           {/* Balance Boosters banner — shown if not set up */}
           {!boostersSetupDone && (
             <TouchableOpacity
@@ -379,7 +486,9 @@ if (data?.boosters_setup_done) {
               onPress={() => navigation.navigate('BalanceBoosters', { isSetup: true })}
               activeOpacity={0.85}
             >
-              <Text style={styles.boostersBannerEmoji}>🌿</Text>
+              <View style={styles.boostersBannerIconWrap}>
+                <Text style={styles.boostersBannerEmoji}>🌿</Text>
+              </View>
               <View style={styles.boostersBannerText}>
                 <Text style={styles.boostersBannerTitle}>Personalize your experience</Text>
                 <Text style={styles.boostersBannerSubtitle}>Tell us what helps you feel like yourself →</Text>
@@ -397,11 +506,14 @@ if (data?.boosters_setup_done) {
               <Text style={styles.boosterCardLabel}>Today's Balance Booster</Text>
               <View style={styles.boosterCardMain}>
                 <Text style={styles.boosterCardEmoji}>{todayBooster.emoji}</Text>
-                <Text style={styles.boosterCardName}>{todayBooster.label}</Text>
+                <View>
+                  <Text style={styles.boosterCardName}>{todayBooster.label}</Text>
+                  <Text style={styles.boosterCardHint}>Tap to explore →</Text>
+                </View>
               </View>
-              <Text style={styles.boosterCardHint}>Tap to explore →</Text>
             </TouchableOpacity>
           )}
+
            {/* Reality Check card — shown if social media or body image selected */}
            {moodTriggers.length > 0 && (
   <View style={styles.realityCard}>
@@ -469,6 +581,7 @@ if (data?.boosters_setup_done) {
 
           {/* Emotional continuity */}
           <View style={styles.continuityCard}>
+            <Text style={styles.continuityIcon}>🌱</Text>
             <Text style={styles.continuityText}>
               Keep checking in daily — your Balance Tree grows with every visit.
             </Text>
@@ -477,12 +590,13 @@ if (data?.boosters_setup_done) {
           {/* Privacy reminder */}
           <View style={styles.privacyReminder}>
             <Text style={styles.privacyText}>
-              Your check-ins and journal are always private to you
+              🔒 Your check-ins and journal are always private to you
             </Text>
           </View>
 
         </Animated.View>
       </ScrollView>
+
       {/* Tawazon Guide floating button */}
       <TouchableOpacity
         style={styles.floatingGuideButton}
@@ -491,9 +605,11 @@ if (data?.boosters_setup_done) {
       >
         <Text style={styles.floatingGuideEmoji}>🌿</Text>
       </TouchableOpacity>
+
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem}>
+          <View style={styles.navActiveIndicator} />
           <Text style={styles.navIconActive}>🏠</Text>
           <Text style={styles.navLabelActive}>Home</Text>
         </TouchableOpacity>
@@ -536,116 +652,164 @@ const styles = StyleSheet.create({
     backgroundColor: '#FAFAFA',
   },
   scrollContent: {
-    paddingBottom: 90,
+    paddingBottom: 100,
   },
   content: {
-    padding: 24,
+    paddingHorizontal: 20,
   },
   microWin: {
     position: 'absolute',
     top: 60,
-    left: 24,
-    right: 24,
+    left: 20,
+    right: 20,
     zIndex: 100,
     backgroundColor: '#2E3A59',
     borderRadius: 16,
-    padding: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: 10,
+    shadowColor: '#2E3A59',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 8,
   },
+  microWinIcon: { fontSize: 16 },
   microWinText: {
     color: '#ffffff',
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
-    marginTop: 48,
+    marginBottom: 20,
+    marginTop: 52,
   },
   greeting: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#9BA3B0',
     marginBottom: 2,
+    letterSpacing: 0.3,
   },
   userName: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '700',
     color: '#2E3A59',
+    letterSpacing: -0.3,
   },
   profileButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     backgroundColor: '#4DB6AC',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#4DB6AC',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
   },
   profileInitial: {
     fontSize: 18,
     fontWeight: '700',
     color: '#ffffff',
   },
+  // Balance card
   balanceCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    borderRadius: 24,
     padding: 20,
     marginBottom: 14,
-    shadowColor: '#B39DDB',
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#4DB6AC',
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 3,
+    shadowRadius: 16,
+    elevation: 4,
   },
-  balanceTop: {
+  balanceCardInner: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 18,
   },
   balanceTextSection: {
     flex: 1,
   },
   balanceLabel: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
     color: '#2E3A59',
     marginBottom: 4,
+    letterSpacing: -0.2,
   },
   balanceSubLabel: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#9BA3B0',
-  },
-  plantEmoji: {
-    fontSize: 48,
-    marginLeft: 12,
-  },
-  balanceBar: {
-    height: 8,
-    backgroundColor: '#F0F0F0',
-    borderRadius: 4,
+    lineHeight: 18,
     marginBottom: 10,
+  },
+  stageChip: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#E8F8F6',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  stageChipText: {
+    fontSize: 12,
+    color: '#4DB6AC',
+    fontWeight: '600',
+    letterSpacing: 0.3,
+  },
+  plantContainer: {
+    marginLeft: 12,
+    width: 72,
+    height: 72,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  balanceBarTrack: {
+    height: 10,
+    backgroundColor: '#F0F5F4',
+    borderRadius: 5,
+    marginBottom: 12,
     overflow: 'hidden',
   },
   balanceFill: {
     height: '100%',
-    borderRadius: 4,
+    borderRadius: 5,
   },
-  balanceBottom: {
+  balanceFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  balanceState: {
-    fontSize: 12,
-    color: '#9BA3B0',
-    fontWeight: '500',
+  balanceScoreRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  balanceDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
   },
   balanceScore: {
     fontSize: 14,
     fontWeight: '700',
   },
+  balanceHint: {
+    fontSize: 11,
+    color: '#C0C8D0',
+    letterSpacing: 0.2,
+  },
+  // Row cards
   rowCards: {
     flexDirection: 'row',
     gap: 12,
@@ -653,67 +817,82 @@ const styles = StyleSheet.create({
   },
   streakCard: {
     backgroundColor: '#FFF8E8',
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 80,
+    width: 84,
+    shadowColor: '#F0A500',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  streakIconWrap: {
+    marginBottom: 6,
   },
   streakEmoji: {
     fontSize: 24,
-    marginBottom: 4,
   },
   streakCount: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '700',
     color: '#2E3A59',
+    letterSpacing: -0.5,
   },
   streakLabel: {
     fontSize: 10,
-    color: '#9BA3B0',
+    color: '#B8A070',
     textAlign: 'center',
+    fontWeight: '500',
+    marginTop: 2,
   },
   reflectionCard: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 16,
     borderLeftWidth: 3,
     borderLeftColor: '#B39DDB',
     shadowColor: '#B39DDB',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 2,
   },
   reflectionTitle: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 10,
+    fontWeight: '700',
     color: '#B39DDB',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 6,
+    letterSpacing: 1,
+    marginBottom: 7,
   },
   reflectionPrompt: {
     fontSize: 13,
     color: '#2E3A59',
-    lineHeight: 18,
+    lineHeight: 19,
     marginBottom: 10,
     fontStyle: 'italic',
   },
   reflectionButton: {
     alignSelf: 'flex-start',
+    backgroundColor: '#EDE9FF',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 20,
   },
   reflectionButtonText: {
     fontSize: 12,
-    color: '#4DB6AC',
+    color: '#B39DDB',
     fontWeight: '600',
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
     color: '#2E3A59',
     marginBottom: 14,
+    letterSpacing: -0.2,
   },
   actionsGrid: {
     flexDirection: 'row',
@@ -723,46 +902,57 @@ const styles = StyleSheet.create({
   },
   actionCard: {
     width: '47%',
-    borderRadius: 16,
+    borderRadius: 18,
     padding: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
+    minHeight: 100,
   },
   actionIcon: {
     fontSize: 28,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   actionTitle: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#2E3A59',
-    marginBottom: 4,
+    marginBottom: 3,
+    letterSpacing: -0.1,
   },
   actionSubtitle: {
     fontSize: 11,
     color: '#9BA3B0',
+    lineHeight: 15,
   },
   continuityCard: {
     backgroundColor: '#F0FAFA',
-    borderRadius: 14,
-    padding: 14,
+    borderRadius: 16,
+    padding: 16,
     marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderWidth: 1,
+    borderColor: '#C8EFEC',
   },
+  continuityIcon: { fontSize: 18 },
   continuityText: {
     fontSize: 12,
     color: '#4DB6AC',
     lineHeight: 18,
-    textAlign: 'center',
+    flex: 1,
+    fontWeight: '500',
   },
   privacyReminder: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
-    borderRadius: 12,
+    backgroundColor: '#F5F7FA',
+    borderRadius: 14,
     padding: 12,
+    marginBottom: 8,
   },
   privacyText: {
     fontSize: 12,
@@ -777,24 +967,33 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: '#FFFFFF',
     flexDirection: 'row',
-    paddingVertical: 10,
-    paddingBottom: 20,
+    paddingTop: 10,
+    paddingBottom: 24,
     borderTopWidth: 1,
     borderTopColor: '#F0F0F0',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
-    elevation: 10,
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
+    elevation: 12,
   },
   navItem: {
     flex: 1,
     alignItems: 'center',
-    gap: 4,
+    gap: 3,
+    position: 'relative',
+  },
+  navActiveIndicator: {
+    position: 'absolute',
+    top: -10,
+    width: 28,
+    height: 2.5,
+    backgroundColor: '#4DB6AC',
+    borderRadius: 2,
   },
   navIcon: {
     fontSize: 22,
-    opacity: 0.4,
+    opacity: 0.35,
   },
   navIconActive: {
     fontSize: 22,
@@ -802,31 +1001,45 @@ const styles = StyleSheet.create({
   navLabel: {
     fontSize: 10,
     color: '#9BA3B0',
+    fontWeight: '500',
   },
   navLabelActive: {
     fontSize: 10,
     color: '#4DB6AC',
-    fontWeight: '600',
+    fontWeight: '700',
   },
   boostersBanner: {
-    backgroundColor: '#F0FAFA',
-    borderRadius: 14,
-    padding: 14,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 14,
     marginBottom: 12,
     borderWidth: 1.5,
     borderColor: '#4DB6AC',
+    shadowColor: '#4DB6AC',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 3,
   },
-  boostersBannerEmoji: { fontSize: 24 },
+  boostersBannerIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#E8F8F6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  boostersBannerEmoji: { fontSize: 22 },
   boostersBannerText: { flex: 1 },
-  boostersBannerTitle: { fontSize: 14, fontWeight: '600', color: '#2E3A59', marginBottom: 2 },
-  boostersBannerSubtitle: { fontSize: 12, color: '#4DB6AC' },
+  boostersBannerTitle: { fontSize: 14, fontWeight: '700', color: '#2E3A59', marginBottom: 2 },
+  boostersBannerSubtitle: { fontSize: 12, color: '#4DB6AC', fontWeight: '500' },
   boosterCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 18,
+    padding: 18,
     marginBottom: 12,
     borderWidth: 1.5,
     borderColor: '#E8F8F6',
@@ -837,57 +1050,60 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   boosterCardLabel: {
-    fontSize: 11,
+    fontSize: 10,
     color: '#4DB6AC',
-    fontWeight: '600',
+    fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 10,
+    letterSpacing: 1,
+    marginBottom: 12,
   },
   boosterCardMain: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginBottom: 8,
+    gap: 14,
   },
-  boosterCardEmoji: { fontSize: 28 },
-  boosterCardName: { fontSize: 17, fontWeight: '700', color: '#2E3A59' },
+  boosterCardEmoji: { fontSize: 32 },
+  boosterCardName: { fontSize: 17, fontWeight: '700', color: '#2E3A59', marginBottom: 3 },
   boosterCardHint: { fontSize: 12, color: '#9BA3B0' },
   realityCard: {
     backgroundColor: '#EDE9FF',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 18,
+    padding: 18,
     marginBottom: 12,
     borderLeftWidth: 3,
     borderLeftColor: '#B39DDB',
   },
   realityCardLabel: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 10,
+    fontWeight: '700',
     color: '#B39DDB',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 8,
+    letterSpacing: 1,
+    marginBottom: 10,
   },
   realityCardText: {
     fontSize: 14,
     color: '#2E3A59',
     lineHeight: 22,
     fontStyle: 'italic',
-    marginBottom: 10,
+    marginBottom: 12,
   },
   realityCardNext: {
     alignSelf: 'flex-end',
+    backgroundColor: '#D9D0F8',
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 20,
   },
   realityCardNextText: {
     fontSize: 12,
-    color: '#B39DDB',
-    fontWeight: '500',
+    color: '#7C3AED',
+    fontWeight: '600',
   },
   floatingGuideButton: {
     position: 'absolute',
-    bottom: 80,
-    right: 24,
+    bottom: 84,
+    right: 20,
     width: 56,
     height: 56,
     borderRadius: 28,
@@ -895,9 +1111,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#2E3A59',
-    shadowOffset: { width: 0, height: 6 },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
-    shadowRadius: 12,
+    shadowRadius: 14,
     elevation: 8,
     zIndex: 100,
   },
@@ -909,6 +1125,10 @@ const styles = StyleSheet.create({
   },
   realityCardExplore: {
     alignSelf: 'flex-end',
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#E8F8F6',
   },
   realityCardExploreText: {
     fontSize: 12,
