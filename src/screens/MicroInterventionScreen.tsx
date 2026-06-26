@@ -8,6 +8,7 @@ import {
   Animated,
   TouchableOpacity,
   StatusBar,
+  ScrollView
 } from 'react-native'
 
 const INTERVENTIONS = [
@@ -201,6 +202,10 @@ export default function MicroInterventionScreen({ navigation, route }: any) {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FAFAFA" />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingVertical: 24 }}
+      >
       <Animated.View
         style={[
           styles.content,
@@ -289,7 +294,8 @@ export default function MicroInterventionScreen({ navigation, route }: any) {
           These tools are optional. There is no pressure.
         </Text>
 
-      </Animated.View>
+        </Animated.View>
+      </ScrollView>
     </View>
   )
 }
@@ -298,13 +304,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FAFAFA',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
   },
   content: {
     width: '100%',
     maxWidth: 400,
     alignSelf: 'center',
+    paddingHorizontal: 24,
   },
   header: {
     marginBottom: 32,
