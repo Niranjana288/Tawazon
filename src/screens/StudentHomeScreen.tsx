@@ -189,7 +189,7 @@ export default function StudentHomeScreen({ navigation, route }: any) {
   const [userName, setUserName] = useState('there')
   const [streak, setStreak] = useState(0)
   const [balanceIndex, setBalanceIndex] = useState(
-    route.params?.balanceStart || 50
+    route.params?.balanceStart || 30
   )
   const [boostersSetupDone, setBoostersSetupDone] = useState(false)
   const [todayBooster, setTodayBooster] = useState<any>(null)
@@ -261,37 +261,58 @@ if (data?.boosters_setup_done) {
   setBoostersSetupDone(true)
   if (data?.balance_boosters?.length > 0) {
     const allItems = [
-      { id: 'listening_music', label: 'Listen to Music', emoji: '🎧' },
       { id: 'drawing', label: 'Drawing', emoji: '✏️' },
-      { id: 'walking', label: 'Walking', emoji: '🚶' },
-      { id: 'reading', label: 'Reading', emoji: '📖' },
-      { id: 'breathing', label: 'Breathing', emoji: '🌬️' },
-      { id: 'gaming', label: 'Gaming', emoji: '🎮' },
-      { id: 'writing', label: 'Writing', emoji: '✍️' },
-      { id: 'nature', label: 'Nature', emoji: '🌿' },
-      { id: 'meditation', label: 'Meditation', emoji: '🧘' },
-      { id: 'dancing', label: 'Dancing', emoji: '💃' },
-      { id: 'movies', label: 'Movies', emoji: '🎥' },
-      { id: 'singing', label: 'Singing', emoji: '🎤' },
-      { id: 'stretching', label: 'Stretching', emoji: '🧘' },
+      { id: 'painting', label: 'Painting', emoji: '🎨' },
       { id: 'photography', label: 'Photography', emoji: '📷' },
+      { id: 'writing', label: 'Writing', emoji: '✍️' },
       { id: 'crafts', label: 'Crafts', emoji: '🧶' },
+      { id: 'digital_art', label: 'Digital Art', emoji: '💻' },
+      { id: 'listening_music', label: 'Listening to Music', emoji: '🎧' },
+      { id: 'singing', label: 'Singing', emoji: '🎤' },
+      { id: 'playing_instruments', label: 'Playing Instruments', emoji: '🎸' },
+      { id: 'making_playlists', label: 'Making Playlists', emoji: '🎶' },
+      { id: 'reading', label: 'Reading', emoji: '📖' },
+      { id: 'documentaries', label: 'Documentaries', emoji: '🎬' },
+      { id: 'new_skills', label: 'Learning New Skills', emoji: '🧠' },
+      { id: 'languages', label: 'Language Learning', emoji: '🌍' },
+      { id: 'walking', label: 'Walking', emoji: '🚶' },
+      { id: 'swimming', label: 'Swimming', emoji: '🏊' },
       { id: 'cycling', label: 'Cycling', emoji: '🚴' },
+      { id: 'stretching', label: 'Stretching', emoji: '🧘' },
+      { id: 'dancing', label: 'Dancing', emoji: '💃' },
+      { id: 'gaming', label: 'Gaming', emoji: '🎮' },
+      { id: 'anime', label: 'Anime', emoji: '✨' },
+      { id: 'movies', label: 'Movies', emoji: '🎥' },
+      { id: 'tv_shows', label: 'TV Shows', emoji: '📺' },
+      { id: 'podcasts', label: 'Podcasts', emoji: '🎙️' },
+      { id: 'nature', label: 'Nature', emoji: '🌿' },
+      { id: 'gardening', label: 'Gardening', emoji: '🌱' },
+      { id: 'meditation', label: 'Meditation', emoji: '🧘' },
+      { id: 'breathing', label: 'Breathing Exercises', emoji: '🌬️' },
+      { id: 'friends', label: 'Talking with Friends', emoji: '👯' },
+      { id: 'family', label: 'Family Time', emoji: '👨‍👩‍👧' },
+      { id: 'group_activities', label: 'Group Activities', emoji: '🎉' },
     ]
     const selected = allItems.filter(i => data.balance_boosters.includes(i.id))
     if (selected.length > 0) {
-      setTodayBooster(selected[Math.floor(Math.random() * selected.length)])
+      const sorted = selected.sort((a, b) => a.id.localeCompare(b.id))
+      const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000)
+      console.log('Home booster:', sorted[dayOfYear % sorted.length]?.id, 'day:', dayOfYear, 'pool:', sorted.map(i => i.id))
+      setTodayBooster(sorted[dayOfYear % sorted.length])
     }
   }
 }
-        const { data: studentData } = await supabase
-          .from('student_profiles')
-          .select('check_in_streak')
-          .eq('id', user.id)
-          .single()
-        if (studentData?.check_in_streak) {
-          setStreak(studentData.check_in_streak)
-        }
+const { data: studentData } = await supabase
+.from('student_profiles')
+.select('check_in_streak, balance_index')
+.eq('id', user.id)
+.single()
+if (studentData?.check_in_streak) {
+setStreak(studentData.check_in_streak)
+}
+if (studentData?.balance_index) {
+setBalanceIndex(studentData.balance_index)
+}
       }
     } catch (e) {
       console.log('Fetch error:', e)

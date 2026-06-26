@@ -23,6 +23,8 @@ import TawazonGuideScreen from '../screens/TawazongGuideScreen'
 import SelfWorthHubScreen from '../screens/SelfWorthHubScreen'
 import TriggerAwarenessScreen from '../screens/TriggerAwarenessScreen'
 import SupportCenterScreen from '../screens/SupportCenterScreen'
+import HelpScreen from '../screens/HelpScreen'
+import RAHAPolicyScreen from '../screens/RAHAPolicyScreen'
 
 const Stack = createStackNavigator()
 
@@ -53,6 +55,8 @@ export default function AppNavigator() {
         <Stack.Screen name="SelfWorthHub" component={SelfWorthHubScreen} />
         <Stack.Screen name="TriggerAwareness" component={TriggerAwarenessScreen} />
         <Stack.Screen name="SupportCenter" component={SupportCenterScreen} />
+        <Stack.Screen name="Help" component={HelpScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="RAHAPolicy" component={RAHAPolicyScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )

@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
+import { supabase } from '../api/supabase'
 import {
   View,
   Text,
@@ -139,7 +140,25 @@ export default function CBTScreen({ navigation }: any) {
         useNativeDriver: true,
       }),
     ]).start()
+    loadCompletedModules()
   }, [])
+
+  const loadCompletedModules = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data } = await supabase
+        .from('profiles')
+        .select('completed_cbt_modules')
+        .eq('id', user.id)
+        .single()
+      if (data?.completed_cbt_modules) {
+        setCompletedModules(data.completed_cbt_modules)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
   const animateSection = () => {
     sectionAnim.setValue(0)
@@ -157,15 +176,35 @@ export default function CBTScreen({ navigation }: any) {
     animateSection()
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentSection < activeModule.sections.length - 1) {
       setCurrentSection(currentSection + 1)
       setPracticeText('')
       animateSection()
     } else {
-      if (!completedModules.includes(activeModule.id)) {
-        setCompletedModules([...completedModules, activeModule.id])
+      const newCompleted = completedModules.includes(activeModule.id)
+        ? completedModules
+        : [...completedModules, activeModule.id]
+      
+      setCompletedModules(newCompleted)
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          const { error } = await supabase
+            .from('profiles')
+            .update({ completed_cbt_modules: newCompleted })
+            .eq('id', user.id)
+          if (error) {
+            console.log('Save error:', error)
+          } else {
+            console.log('Saved successfully:', newCompleted)
+          }
+        }
+      } catch (e) {
+        console.log('Error:', e)
       }
+
       setActiveModule(null)
       setCurrentSection(0)
       setPracticeText('')

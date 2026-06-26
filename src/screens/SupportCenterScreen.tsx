@@ -148,8 +148,56 @@ export default function SupportCenterScreen({ navigation }: any) {
               🔒 Everything in Tawazon is private. Seeking support is always your choice.
             </Text>
           </View>
+          {/* ED specific support */}
+<View style={styles.section}>
+  <Text style={styles.sectionTitle}>
+    Eating and body image support
+  </Text>
 
-        </Animated.View>
+  <View style={styles.resourceCard}>
+    <Text style={styles.resourceEmoji}>🌸</Text>
+    <View style={styles.resourceInfo}>
+      <Text style={styles.resourceTitle}>Beat Eating Disorders</Text>
+      <Text style={styles.resourceDesc}>
+        Helpline with international reach. Online chat and phone support available.
+      </Text>
+      <TouchableOpacity
+        style={styles.callButton}
+        onPress={() => Linking.openURL('https://www.beateatingdisorders.org.uk')}
+      >
+        <Text style={styles.callButtonText}>Visit website</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+
+  <View style={styles.resourceCard}>
+    <Text style={styles.resourceEmoji}>🤝</Text>
+    <View style={styles.resourceInfo}>
+      <Text style={styles.resourceTitle}>ANAD Helpline</Text>
+      <Text style={styles.resourceDesc}>
+        Free support, resources and recovery groups for anyone struggling with food or body image.
+      </Text>
+      <TouchableOpacity
+        style={styles.callButton}
+        onPress={() => Linking.openURL('https://anad.org/get-help/')}
+      >
+        <Text style={styles.callButtonText}>Visit website</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+
+  <View style={styles.resourceCard}>
+    <Text style={styles.resourceEmoji}>🏥</Text>
+    <View style={styles.resourceInfo}>
+      <Text style={styles.resourceTitle}>School nurse or GP</Text>
+      <Text style={styles.resourceDesc}>
+        If food or body image thoughts are causing distress, a school nurse or GP is a safe first step. You do not need to have all the answers before reaching out.
+      </Text>
+    </View>
+  </View>
+</View>
+          
+       </Animated.View>
       </ScrollView>
     </View>
   )

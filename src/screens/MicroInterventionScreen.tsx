@@ -1,4 +1,6 @@
 import { useRef, useEffect, useState } from 'react'
+import { supabase } from '../api/supabase'
+import { getUserFlags } from '../utils/getUserFlags'
 import {
   View,
   Text,
@@ -40,6 +42,46 @@ const INTERVENTIONS = [
     ],
   },
 ]
+const ED_TOOLS = [
+  {
+    id: 'urge_surfing',
+    title: 'Ride the wave 🌊',
+    description: 'This feeling is intense right now — but like a wave, it will peak and then pass.',
+    duration: '2 minutes',
+    steps: [
+      'Notice the urge without acting on it',
+      'Name it: "I am having a difficult moment right now"',
+      'Breathe slowly for 60 seconds',
+      'Rate the feeling out of 10 — watch it change',
+    ],
+  },
+  {
+    id: 'grounding',
+    title: 'Come back to now 🌿',
+    description: 'After a difficult moment, this can help you return to the present.',
+    duration: '3 minutes',
+    steps: [
+      'Name 5 things you can see',
+      'Name 4 things you can touch',
+      'Name 3 things you can hear',
+      'Take 3 slow breaths',
+      'Say: "I am safe right now"',
+    ],
+  },
+  {
+    id: 'self_compassion',
+    title: 'What you deserve to hear 💛',
+    description: 'Read these slowly. You do not have to believe them fully yet — just let them in.',
+    duration: '2 minutes',
+    steps: [
+      'You deserve to eat. Every day, without conditions.',
+      'Your body is doing its best for you.',
+      'One difficult moment does not erase your progress.',
+      'You are more than what you eat or how you look.',
+      'It is okay to struggle. It does not mean you are failing.',
+    ],
+  },
+]
 
 export default function MicroInterventionScreen({ navigation, route }: any) {
   const fadeAnim = useRef(new Animated.Value(0)).current
@@ -47,6 +89,7 @@ export default function MicroInterventionScreen({ navigation, route }: any) {
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
   const [showSteps, setShowSteps] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
+  const [edMode, setEdMode] = useState(false)
   const stepAnim = useRef(new Animated.Value(0)).current
 
   const moodScore = route.params?.moodScore || 2
@@ -65,7 +108,10 @@ export default function MicroInterventionScreen({ navigation, route }: any) {
         useNativeDriver: true,
       }),
     ]).start()
+    const isEdMode = route.params?.edMode || false
+    setEdMode(isEdMode)
   }, [])
+  
 
   const handleSelectTool = (id: string) => {
     setSelectedTool(id)
@@ -175,6 +221,42 @@ export default function MicroInterventionScreen({ navigation, route }: any) {
         </View>
 
         {/* Tool cards */}
+  {edMode && (
+  <View style={styles.edToolsSection}>
+    <Text style={styles.edToolsTitle}>
+      Something gentle for this moment
+    </Text>
+    <Text style={styles.edToolsSubtitle}>
+      This feeling will pass. These tools can help you through it.
+    </Text>
+    {ED_TOOLS.map(tool => (
+      <View key={tool.id} style={styles.edToolCard}>
+        <Text style={styles.edToolTitle}>{tool.title}</Text>
+        <Text style={styles.edToolDuration}>{tool.duration}</Text>
+        <Text style={styles.edToolDesc}>{tool.description}</Text>
+        <View style={styles.edToolSteps}>
+          {tool.steps.map((step, index) => (
+            <View key={index} style={styles.edToolStep}>
+              <View style={styles.edToolStepDot} />
+              <Text style={styles.edToolStepText}>{step}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+    ))}
+    <View style={styles.edSupportNote}>
+      <Text style={styles.edSupportText}>
+        If things feel too heavy, speaking to a school counselor or trusted adult is always a brave step.
+      </Text>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('SupportCenter')}
+        style={styles.edSupportButton}
+      >
+        <Text style={styles.edSupportButtonText}>Find support →</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+)}
         {INTERVENTIONS.map((intervention) => (
           <TouchableOpacity
             key={intervention.id}
@@ -355,5 +437,94 @@ const styles = StyleSheet.create({
   skipLinkText: {
     fontSize: 13,
     color: '#9BA3B0',
+  },
+  edToolsSection: {
+    marginBottom: 24,
+  },
+  edToolsTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#2E3A59',
+    marginBottom: 6,
+  },
+  edToolsSubtitle: {
+    fontSize: 13,
+    color: '#9BA3B0',
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  edToolCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: '#4DB6AC',
+    shadowColor: '#4DB6AC',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 2,
+  },
+  edToolTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#2E3A59',
+    marginBottom: 4,
+  },
+  edToolDuration: {
+    fontSize: 11,
+    color: '#4DB6AC',
+    fontWeight: '600',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  edToolDesc: {
+    fontSize: 13,
+    color: '#6B7280',
+    lineHeight: 20,
+    fontStyle: 'italic',
+    marginBottom: 14,
+  },
+  edToolSteps: { gap: 10 },
+  edToolStep: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  edToolStepDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#4DB6AC',
+    marginTop: 7,
+  },
+  edToolStepText: {
+    fontSize: 13,
+    color: '#2E3A59',
+    lineHeight: 20,
+    flex: 1,
+  },
+  edSupportNote: {
+    backgroundColor: '#F0FAFA',
+    borderRadius: 14,
+    padding: 14,
+    borderLeftWidth: 3,
+    borderLeftColor: '#4DB6AC',
+  },
+  edSupportText: {
+    fontSize: 13,
+    color: '#2E3A59',
+    lineHeight: 20,
+    marginBottom: 10,
+  },
+  edSupportButton: {
+    alignSelf: 'flex-start',
+  },
+  edSupportButtonText: {
+    fontSize: 13,
+    color: '#4DB6AC',
+    fontWeight: '600',
   },
 })

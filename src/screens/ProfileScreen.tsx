@@ -290,6 +290,22 @@ export default function ProfileScreen({ navigation }: any) {
             <Text style={styles.supportButtonText}>🌿 Support Center</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            style={styles.supportButton}
+            onPress={() => navigation.navigate('Help')}
+            activeOpacity={0.85}
+          >
+          <Text style={styles.supportButtonText}>❓ Help & FAQs</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+           style={styles.rahaPolicyButton}
+           onPress={() => navigation.navigate('RAHAPolicy')}
+            activeOpacity={0.85}
+          >
+          <Text style={styles.rahaPolicyButtonText}>
+            🌿 RAHA Policy
+          </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={styles.signOutButton}
             onPress={handleSignOut}
             activeOpacity={0.85}
@@ -577,5 +593,19 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#4DB6AC',
+  },
+  rahaPolicyButton: {
+    backgroundColor: '#E8F8F6',
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginBottom: 12,
+    borderWidth: 1.5,
+    borderColor: '#4DB6AC',
+  },
+  rahaPolicyButtonText: {
+    fontSize: 14,
+    color: '#4DB6AC',
+    fontWeight: '600',
   },
 })

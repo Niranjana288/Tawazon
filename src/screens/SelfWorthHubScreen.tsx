@@ -145,9 +145,7 @@ export default function SelfWorthHubScreen({ navigation }: any) {
         .order('created_at', { ascending: false })
         .limit(1)
         .single()
-      if (data?.severity) {
-        setClassificationLevel(data.severity as 'low' | 'moderate' | 'high')
-      }
+        setClassificationLevel((data?.severity as 'low' | 'moderate' | 'high') || 'low')
     } catch (e) {
       console.log(e)
     } finally {

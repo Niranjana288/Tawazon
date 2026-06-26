@@ -260,6 +260,17 @@ export default function RiskAssessmentScreen({ navigation }: any) {
       console.log('Save error:', e)
     } finally {
         setSaving(false)
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          const isHighRisk = classification?.level === 'high'
+          await supabase
+           .from('student_profiles')
+           .update({
+            risk_level: classification?.level || 'low',
+            ed_flag: isHighRisk,
+          })
+          .eq('id', user.id)
+        }
         navigation.navigate('MoodTrigger')
       }
     }

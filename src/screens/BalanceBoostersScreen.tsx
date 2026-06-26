@@ -221,8 +221,13 @@ export default function BalanceBoostersScreen({ navigation, route }: any) {
         setSelected(data.balance_boosters)
         setSetupDone(data.boosters_setup_done || false)
         if (data.boosters_setup_done && !isSetup) {
-          const rec = getRecommendation(data.balance_boosters, moodScore, stressScore)
-          setRecommendation(rec)
+          const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000)
+          const pool = ALL_ITEMS.filter(i => data.balance_boosters.includes(i.id))
+          if (pool.length > 0) {
+            const sorted = pool.sort((a, b) => a.id.localeCompare(b.id))
+            console.log('Booster screen:', sorted[dayOfYear % sorted.length]?.id, 'day:', dayOfYear, 'pool:', sorted.map(i => i.id))
+            setRecommendation(sorted[dayOfYear % sorted.length])
+          }
         }
       }
     } catch (e) {

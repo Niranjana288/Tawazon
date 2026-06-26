@@ -78,7 +78,15 @@ export default function DisclaimerScreen({ navigation }: any) {
         <Text style={styles.agreementText}>
           By continuing, you acknowledge that Tawazon is a support tool only and agree to use it responsibly.
         </Text>
-
+        <TouchableOpacity
+          style={styles.rahaPolicyButton}
+          onPress={() => navigation.navigate('RAHAPolicy')}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.rahaPolicyButtonText}>
+            🌿 Read the RAHA Policy
+          </Text>
+       </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
           activeOpacity={0.85}
@@ -204,5 +212,19 @@ const styles = StyleSheet.create({
   },
   bottomSpace: {
     height: 40,
+  },
+  rahaPolicyButton: {
+    backgroundColor: '#E8F8F6',
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginBottom: 12,
+    borderWidth: 1.5,
+    borderColor: '#4DB6AC',
+  },
+  rahaPolicyButtonText: {
+    fontSize: 14,
+    color: '#4DB6AC',
+    fontWeight: '600',
   },
 })

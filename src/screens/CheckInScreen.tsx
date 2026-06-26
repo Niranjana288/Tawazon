@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
+import { getUserFlags } from '../utils/getUserFlags'
 import {
   View,
   Text,
@@ -34,6 +35,8 @@ export default function CheckInScreen({ navigation }: any) {
   const [selectedMood, setSelectedMood] = useState<number | null>(null)
   const [stressLevel, setStressLevel] = useState(3)
   const [sleepQuality, setSleepQuality] = useState(3)
+  const [edFlag, setEdFlag] = useState(false)
+  const [foodMood, setFoodMood] = useState<number | null>(null)
   const [note, setNote] = useState('')
   const [noteFocused, setNoteFocused] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -42,6 +45,8 @@ export default function CheckInScreen({ navigation }: any) {
   const [microWin, setMicroWin] = useState('')
 
   useEffect(() => {
+    getUserFlags().then(({ edFlag }) => setEdFlag(edFlag))
+    getUserFlags().then(({ edFlag }) => console.log('ED Flag:', edFlag))
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -110,17 +115,22 @@ export default function CheckInScreen({ navigation }: any) {
             eating_regularity: 3,
             note: note || null,
             checkin_date: today,
+            food_mood: foodMood,
           })
-        if (error) {
-          setError('Something went wrong. Please try again.')
-        } else {
+        if (!error) {
           await updateStreak(user.id)
           const win = MICRO_WIN_MESSAGES[
             Math.floor(Math.random() * MICRO_WIN_MESSAGES.length)
           ]
           setMicroWin(win)
           const moodScore = MOODS[selectedMood!].score
-          if (moodScore <= 2 || stressLevel >= 4) {
+          if (foodMood === 4) {
+            navigation.navigate('MicroIntervention', {
+              edMode: true,
+              moodScore,
+              stressLevel,
+            })
+          } else if (moodScore <= 2 || stressLevel >= 4) {
             navigation.navigate('MicroIntervention', {
               moodScore,
               stressLevel,
@@ -128,6 +138,8 @@ export default function CheckInScreen({ navigation }: any) {
           } else {
             setDone(true)
           }
+        } else {
+          setError('Something went wrong. Please try again.')
         }
       }
     } catch (e) {
@@ -150,14 +162,21 @@ export default function CheckInScreen({ navigation }: any) {
         .single()
       const { data: profile } = await supabase
         .from('student_profiles')
-        .select('check_in_streak')
+        .select('check_in_streak, balance_index')
         .eq('id', userId)
         .single()
-      const currentStreak = profile?.check_in_streak || 0
-      const newStreak = data ? currentStreak + 1 : 1
-      await supabase
-        .from('student_profiles')
-        .upsert({ id: userId, check_in_streak: newStreak })
+        const currentStreak = profile?.check_in_streak || 0
+        const newStreak = data ? currentStreak + 1 : 1
+        const currentBalance = profile?.balance_index || 30
+        const bonusPoints = newStreak % 7 === 0 ? 2 : 0
+        const newBalance = Math.min(currentBalance + 1 + bonusPoints, 100)
+        await supabase
+         .from('student_profiles')
+         .update({
+           check_in_streak: newStreak,
+           balance_index: newBalance,
+        })
+        .eq('id', userId)
     } catch (e) {
       console.log('Streak error:', e)
     }
@@ -329,6 +348,45 @@ export default function CheckInScreen({ navigation }: any) {
               <Text style={styles.sliderLabelText}>Great</Text>
             </View>
           </View>
+          {/* Food mood — ED flag users only */}
+{edFlag && (
+  <View style={styles.section}>
+    <Text style={styles.sectionLabel}>
+      How has your relationship with food felt today?
+    </Text>
+    <Text style={styles.optionalLabel}>
+      Optional — skip if you prefer
+    </Text>
+    <View style={styles.foodMoodRow}>
+      {[
+        { score: 1, label: 'Peaceful', emoji: '🌿' },
+        { score: 2, label: 'Neutral', emoji: '😐' },
+        { score: 3, label: 'Difficult', emoji: '🌧️' },
+        { score: 4, label: 'Very difficult', emoji: '⛈️' },
+      ].map(option => (
+        <TouchableOpacity
+          key={option.score}
+          style={[
+            styles.foodMoodOption,
+            foodMood === option.score && styles.foodMoodOptionSelected,
+          ]}
+          onPress={() => setFoodMood(
+            foodMood === option.score ? null : option.score
+          )}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.foodMoodEmoji}>{option.emoji}</Text>
+          <Text style={[
+            styles.foodMoodLabel,
+            foodMood === option.score && styles.foodMoodLabelSelected,
+          ]}>
+            {option.label}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  </View>
+)}
 
           {/* Optional note */}
           <View style={styles.section}>
@@ -616,6 +674,43 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     color: '#4DB6AC',
     fontSize: 15,
+    fontWeight: '600',
+  },
+  optionalLabel: {
+    fontSize: 11,
+    color: '#9BA3B0',
+    marginBottom: 12,
+    fontStyle: 'italic',
+  },
+  foodMoodRow: {
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  foodMoodOption: {
+    flex: 1,
+    minWidth: '45%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 12,
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: '#E8ECF0',
+    gap: 6,
+  },
+  foodMoodOptionSelected: {
+    backgroundColor: '#F0FAFA',
+    borderColor: '#4DB6AC',
+  },
+  foodMoodEmoji: { fontSize: 22 },
+  foodMoodLabel: {
+    fontSize: 12,
+    color: '#9BA3B0',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  foodMoodLabelSelected: {
+    color: '#4DB6AC',
     fontWeight: '600',
   },
 })
